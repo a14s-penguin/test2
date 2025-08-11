@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DIRECT_URL")
+}
+model User {
+  id       String   @id @default(uuid()) // hoặc @default(cuid()) 
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  permissions Permission[]
+}
+
+model Permission {
+  id       String   @id @default(uuid()) // hoặc @default(cuid()) 
+  name     String
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([name, userId])
+}
+
+model Message {
+  id       String   @id @default(uuid()) // hoặc @default(cuid()) 
+  role      String
+  content   String
+  sessionId String
+  embedding Json?   
+  createdAt DateTime @default(now())
+}
+
+model Knowledge {
+  id       String   @id @default(uuid()) // hoặc @default(cuid()) 
+  subTitle  String
+  content   String
+  embedding Json
+  createdAt DateTime @default(now())
+}
+
+model Leave {
+  id        String @id @default(uuid())
+  name      String
+  date      DateTime
+  reason    String
+  createdAt DateTime @default(now())
+}
