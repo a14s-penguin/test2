@@ -32,10 +32,8 @@
 
 import { NextResponse } from 'next/server';
 import { smartSplitWithGemini } from '@/lib/geminiChunker';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getEmbedding } from '@/lib/gemini';
-
-export const prisma = new PrismaClient();
 
 export async function GET() {
     const knowledge = await prisma.knowledge.findMany()

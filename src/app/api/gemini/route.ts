@@ -253,24 +253,24 @@ export async function POST(req: Request) {
         const knowledgeRecords = await prisma.knowledge.findMany({
             where: {
                 embedding: {
-                    not: null,
+                    not: { equals: null },
                 },
             },
         });
 
         // Tính similarity cho từng bản ghi
         const knowledgeMatches = knowledgeRecords
-            .map((record) => {
+            .map((record: any) => {
                 const vector = Array.isArray(record.embedding) ? (record.embedding as number[]) : [];
                 const similarity = cosineSimilarity(userEmbedding, vector);
                 return { ...record, similarity };
             })
-            .filter(match => match.similarity > 0.80)
-            .sort((a, b) => b.similarity - a.similarity);
+            .filter((match: any) => match.similarity > 0.80)
+            .sort((a: any, b: any) => b.similarity - a.similarity);
 
         if (knowledgeMatches.length > 0) {
             const topKnowledge = knowledgeMatches.slice(0, 5);
-            const context = topKnowledge.map((k, i) => `Mục ${i + 1}: ${k.content}`).join('\n\n');
+            const context = topKnowledge.map((k: any, i: any) => `Mục ${i + 1}: ${k.content}`).join('\n\n');
 
             const prompt = `
                 Bạn là một trợ lý thông minh. Dưới đây là một số thông tin liên quan đến câu hỏi của người dùng. 
@@ -316,19 +316,19 @@ export async function POST(req: Request) {
             where: {
                 role: 'assistant',
                 embedding: {
-                    not: null,
+                    not: { equals: null },
                 },
             },
         });
 
         const matches = storedMessages
-            .map((msg) => {
+            .map((msg: any) => {
                 const vector = Array.isArray(msg.embedding) ? (msg.embedding as number[]) : [];
                 const similarity = cosineSimilarity(userEmbedding, vector);
                 return { ...msg, similarity };
             })
-            .filter(match => match.similarity > 0.75) // lấy những câu gần giống nhất
-            .sort((a, b) => b.similarity - a.similarity);
+            .filter((match: any) => match.similarity > 0.75) // lấy những câu gần giống nhất
+            .sort((a: any, b: any) => b.similarity - a.similarity);
 
         // console.log('Stored messages matches found:', matches.length);
 
@@ -336,7 +336,7 @@ export async function POST(req: Request) {
             // Ghép các câu trả lời cũ thành một context
             const topMessages = matches.slice(0, 5);
             const context = topMessages
-                .map((m, idx) => `Phản hồi ${idx + 1}: ${m.content}`)
+                .map((m: any, idx: any) => `Phản hồi ${idx + 1}: ${m.content}`)
                 .join('\n\n');
 
             const prompt = `

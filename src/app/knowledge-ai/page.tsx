@@ -116,10 +116,10 @@ export default function KnowledgeClient() {
                 <Table.Column
                     title="Hành động"
                     key="action"
-                    render={(text, record) => (
+                    render={(text, record: any) => (
                         <Space size="middle">
                             <Button onClick={() => {
-                                setEditingKnowledge(record);
+                                setEditingKnowledge(record as Knowledge);
                                 setSubTitle(record.subTitle);
                                 setContent(record.content);
                                 setShowModal(true);
@@ -146,7 +146,7 @@ export default function KnowledgeClient() {
 
                                     notification.success({ message: 'Thành công', description: 'Kiến thức đã được xoá.' });
                                     fetchKnowledge();
-                                } catch (error) {
+                                } catch (error: any) {
                                     notification.error({ message: 'Lỗi', description: error.message });
                                 }
                             }}>Xoá</Button>
@@ -178,7 +178,7 @@ export default function KnowledgeClient() {
                             notification.success({ message: 'Thành công', description: 'Kiến thức đã được lưu.' });
                             setShowModal(false);
                             fetchKnowledge();
-                        } catch (error) {
+                        } catch (error: any) {
                             notification.error({ message: 'Lỗi', description: error.message });
                         }
                     }}

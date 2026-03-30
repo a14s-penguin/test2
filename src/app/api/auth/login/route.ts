@@ -1,9 +1,7 @@
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-
-const prisma = new PrismaClient()
+import jwt, { Secret, SignOptions } from 'jsonwebtoken'
 
 export async function POST(req: Request) {
     const { email, password } = await req.json()
@@ -14,18 +12,27 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Sai email hoặc mật khẩu' }, { status: 401 })
     }
 
-    const accessToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET!, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    })
+    const secret: Secret = process.env.JWT_SECRET || "fallback_secret";
+
+    const accessToken = jwt.sign(
+        { id: user.id, email: user.email },
+        secret,
+        {
+            expiresIn: (process.env.JWT_EXPIRES_IN || "15m") as SignOptions["expiresIn"],
+        }
+    );
     console.log("accessToken", accessToken);
+
+    const refreshSecret: Secret =
+        process.env.JWT_REFRESH_SECRET || "fallback_refresh_secret";
 
     const refreshToken = jwt.sign(
         { id: user.id },
-        process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret',
+        refreshSecret,
         {
-            expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+            expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as SignOptions["expiresIn"],
         }
-    )
+    );
 
     const res = NextResponse.json({ success: true, user: user })
     res.cookies.set('token', accessToken, {

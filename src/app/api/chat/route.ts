@@ -18,14 +18,14 @@ export async function POST(req: Request) {
     });
 
     const topK = pastMessages
-        .map((m) => ({
+        .map((m: any) => ({
             ...m,
             similarity: cosineSimilarity(embedding, m.embedding),
         }))
-        .sort((a, b) => b.similarity - a.similarity)
+        .sort((a: any, b: any) => b.similarity - a.similarity)
         .slice(0, 5);
 
-    const context = topK.map((m) => `${m.role}: ${m.content}`).join('\n');
+    const context = topK.map((m: any) => `${m.role}: ${m.content}`).join('\n');
 
     const prompt = `${context}\nuser: ${message}`;
 
